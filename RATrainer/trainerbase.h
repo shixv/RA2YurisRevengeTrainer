@@ -9,7 +9,10 @@
 class TrainerBase
 {
 public:
-	TrainerBase():GameCaption("gamemd.exe"){
+	TrainerBase():GameCaption("gamemd.exe"),
+		GameCaptionSpawn("gamemd-spawn.exe"),
+		GameCaptionAres("gameares.exe")
+	{
 		hDLL = LoadLibrary(TEXT("aa_engine.dll"));  // 载入DLL
 		if (hDLL == 0) {
 			::MessageBox(NULL, "没有找到aa_engine.dll，修改器必须使用同目录下的该文件", "错误:", NULL);
@@ -21,11 +24,15 @@ public:
 	}
 
 	const PCHAR GameCaption;        //标题名
+	const PCHAR GameCaptionSpawn;
+	const PCHAR GameCaptionAres;
+	PCHAR curCap;
 	HMODULE hDLL;	// aa_engine.dll
 	HANDLE pid; //进程句柄及权限
 
 	BOOL GetProcessIDFromName(char *name,LPDWORD id);
 	DWORD getID();
+	char* getCap();
 	BOOL IsGameRunning(DWORD mode);
 	BOOL readMemory(DWORD m,DWORD* dat);
 	BOOL readMemory(const DWORD* add,const DWORD len,DWORD* dat);

@@ -61,6 +61,20 @@ BOOL TrainerFunctions::wBuildMaxm(DWORD maxm) //上限修改
 	return TRUE;
 }
 
+std::string TrainerFunctions::ChangePn(char* p)
+{
+	std::string str = p;
+	std::string search_str = GameCaption;
+	std::string replace_str = getCap();
+	size_t pos = 0; // 查找位置
+	while ((pos = str.find(search_str, pos)) != std::string::npos) // 在str中查找search_str，如果找到了就替换
+	{
+		str.replace(pos, search_str.length(), replace_str); // 替换
+		pos += replace_str.length(); // 更新查找位置
+	}
+	return str;
+}
+
 BOOL TrainerFunctions::QuickBuild() //快速建造
 {
 	int j=0;
@@ -413,7 +427,8 @@ mov [esi+000053A8],edx\n\
 ";
 bool TrainerFunctions::NoLoad(int command) //无限电力
 {
-	return AutoAssemble(pid, NoLoad_Assemble, command);
+	std::string pn = ChangePn(NoLoad_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 //不会导致AI只造电厂问题，但是超级武器不断电￣へ￣以后改进吧
@@ -508,8 +523,10 @@ bool TrainerFunctions::PutAsWill(int command) //随意建筑
 	//b1 = AutoAssemble(pid, PutAsWill_Assemble, command);
 	//b2 = AutoAssemble(pid, PutWaterAble_Assemble, command);
 	//return b1 && b2;
-	AutoAssemble(pid, PutAsWill_Assemble, command);
-	AutoAssemble(pid, PutWaterAble_Assemble, command);
+	std::string pn = ChangePn(PutAsWill_Assemble);
+	AutoAssemble(pid, (char *)pn.c_str(), command);
+	std::string pn1 = ChangePn(PutWaterAble_Assemble);
+	AutoAssemble(pid, (char *)pn1.c_str(), command);
 	return true;
 }
 
@@ -580,8 +597,10 @@ xor al,al\n\
 bool TrainerFunctions::AutoRepair(int command) //自动修理
 {
 	bool b1, b2;
-	b1 = AutoAssemble(pid, AutoRepair_Assemble, command);
-	b2 = AutoAssemble(pid, AutoRepairNeutral_Assemble, command);
+	std::string pn = ChangePn(AutoRepair_Assemble);
+	b1 = AutoAssemble(pid, (char *)pn.c_str(), command);
+	std::string pn1 = ChangePn(AutoRepairNeutral_Assemble);
+	b2 = AutoAssemble(pid, (char *)pn1.c_str(), command);
 	return b1 && b2;
 }
 
@@ -677,8 +696,10 @@ call dword ptr [edx+000003D4]\n\
 bool TrainerFunctions::RevengeYuri(int command) //反控制
 {
 	bool b1, b2;
-	b1 = AutoAssemble(pid, RevengeYuri_Assemble, command);
-	b2 = AutoAssemble(pid, PermanentYuri_Assemble, command);
+	std::string pn = ChangePn(RevengeYuri_Assemble);
+	b1 = AutoAssemble(pid, (char *)pn.c_str(), command);
+	std::string pn1 = ChangePn(PermanentYuri_Assemble);
+	b2 = AutoAssemble(pid, (char *)pn.c_str(), command);
 	return b1 && b2;
 }
 
@@ -731,7 +752,8 @@ mov edx,[eax]\n\
 ";
 bool TrainerFunctions::MineAttack(int command) //攻击反控
 {
-	return AutoAssemble(pid, MineAttack_Assemble, command);
+	std::string pn = ChangePn(MineAttack_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* MineBuildIn_Assemble = "\
@@ -765,7 +787,8 @@ call dword ptr [edx+000003D4]\n\
 
 bool TrainerFunctions::MineBuildIn(int command) //进房反控
 {
-	return AutoAssemble(pid, MineBuildIn_Assemble, command);
+	std::string pn = ChangePn(MineBuildIn_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* MineUnEngineer_Assemble = "\
@@ -802,7 +825,8 @@ call dword ptr [edx+000003D4]\n\
 ";
 bool TrainerFunctions::MineUnEngineer(int command) //反工程师占领
 {
-	return AutoAssemble(pid, MineUnEngineer_Assemble, command);
+	std::string pn = ChangePn(MineUnEngineer_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* BuildImme_Assemble = "\
@@ -862,7 +886,8 @@ mov edx,[esp+10]\n\
 ";
 bool TrainerFunctions::BuildImme(int command) //瞬间建造
 {
-	return AutoAssemble(pid, BuildImme_Assemble, command);
+	std::string pn = ChangePn(BuildImme_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* Unbeatable_Assemble = "\
@@ -906,7 +931,8 @@ mov [esi+6C],eax\n\
 ";
 bool TrainerFunctions::Unbeatable(int command)//无敌实现函数
 {
-	return AutoAssemble(pid, Unbeatable_Assemble, command);
+	std::string pn = ChangePn(Unbeatable_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* AntiChrono_Assemble = "\
@@ -972,8 +998,10 @@ mov byte ptr [ecx+00000660],00\n\
 bool TrainerFunctions::AntiChrono(int command) //反超时空攻击
 {
 	bool b1, b2;
-	b1 = AutoAssemble(pid, AntiChrono_Assemble, command);			//超时空冷却无限长
-	b2 = AutoAssemble(pid, AntiChronoDisbuild_Assemble, command);	//超时空过程允许建造
+	std::string pn = ChangePn(AntiChrono_Assemble);
+	b1 = AutoAssemble(pid, (char *)pn.c_str(), command);			//超时空冷却无限长
+	std::string pn1 = ChangePn(AntiChronoDisbuild_Assemble);
+	b2 = AutoAssemble(pid, (char *)pn1.c_str(), command);	//超时空过程允许建造
 	return b1 && b2;
 }
 
@@ -1034,7 +1062,8 @@ mov [esi+6C],ebx\n\
 ";
 bool TrainerFunctions::UnRepair(int command) //反修
 {
-	return AutoAssemble(pid, UnRepair_Assemble, command);
+	std::string pn = ChangePn(UnRepair_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 bool TrainerFunctions::InvadeMode(int command) //不删除建造选项-不需要注入，直接替换
@@ -1077,7 +1106,8 @@ mov ecx,[00A8B238]\n\
 ";
 bool TrainerFunctions::UnlockTech(int command) //飞机全科技
 {
-	return AutoAssemble(pid, UnlockTech_Assemble, command);
+	std::string pn = ChangePn(UnlockTech_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* FastAttack_Assemble = "\
@@ -1110,7 +1140,8 @@ mov eax,[esi+000002F4]\n\
 ";
 bool TrainerFunctions::FastAttack(int command) //极速攻击
 {
-	return AutoAssemble(pid, FastAttack_Assemble, command);
+	std::string pn = ChangePn(FastAttack_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* FastTurnBattery_Assemble = "\
@@ -1159,7 +1190,8 @@ mov ecx,[ecx+08]\n\
 ";
 bool TrainerFunctions::FastTurnBattery(int command) //极速转炮塔
 {
-	return AutoAssemble(pid, FastTurnBattery_Assemble, command);
+	std::string pn = ChangePn(FastTurnBattery_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* FastTurnRound_Assemble = "\
@@ -1194,7 +1226,8 @@ mov ax,dx\n\
 ";
 bool TrainerFunctions::FastTurnRound(int command) //极速转身
 {
-	return AutoAssemble(pid, FastTurnRound_Assemble, command);
+	std::string pn = ChangePn(FastTurnRound_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* FastReload_Assemble = "\
@@ -1228,7 +1261,8 @@ mov eax,[eax+00000D60]\n\
 ";
 bool TrainerFunctions::FastReload(int command) //闪电重装
 {
-	return AutoAssemble(pid, FastReload_Assemble, command);
+	std::string pn = ChangePn(FastReload_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* FullAmmunition_Assemble = "\
@@ -1262,7 +1296,8 @@ mov eax,[eax+00000D5C]\n\
 ";
 bool TrainerFunctions::FullAmmunition(int command) //弹药充足
 {
-	return AutoAssemble(pid, FullAmmunition_Assemble, command);
+	std::string pn = ChangePn(FullAmmunition_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* AllRangeAttack_Assemble = "\
@@ -1298,7 +1333,8 @@ mov edi,[ebx+000000B4]\n\
 ";
 bool TrainerFunctions::AllRangeAttack(int command) //远程打击
 {
-	return AutoAssemble(pid, AllRangeAttack_Assemble, command);
+	std::string pn = ChangePn(AllRangeAttack_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* AllRangeAlert_Assemble = "\
@@ -1332,7 +1368,8 @@ mov ebx,[eax+000000B4]\n\
 ";
 bool TrainerFunctions::AllRangeAlert(int command) //远程警戒
 {
-	return AutoAssemble(pid, AllRangeAlert_Assemble, command);
+	std::string pn = ChangePn(AllRangeAlert_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* InstantChronoMove_Assemble = "\
@@ -1367,7 +1404,8 @@ mov byte ptr [ecx+00000271],01\n\
 ";
 bool TrainerFunctions::InstantChronoMove(int command) //瞬间超时空移动
 {
-	return AutoAssemble(pid, InstantChronoMove_Assemble, command);
+	std::string pn = ChangePn(InstantChronoMove_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* InstantChronoAttack_Assemble = "\
@@ -1409,7 +1447,8 @@ je 0071B064\n\
 ";
 bool TrainerFunctions::InstantChronoAttack(int command) //瞬间超时空攻击
 {
-	return AutoAssemble(pid, InstantChronoAttack_Assemble, command);
+	std::string pn = ChangePn(InstantChronoAttack_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* AntiSpy_Assemble = "\
@@ -1449,7 +1488,8 @@ call 004571E0\n\
 ";
 bool TrainerFunctions::AntiSpy(int command) //间间谍
 {
-	return AutoAssemble(pid, AntiSpy_Assemble, command);
+	std::string pn = ChangePn(AntiSpy_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 
@@ -1491,7 +1531,8 @@ mov eax,[esi+00000504]\n\
 ";
 bool TrainerFunctions::DisableGAGAP(int command) //瘫痪裂缝产生器
 {
-	return AutoAssemble(pid, DisableGAGAP_Assemble, command);
+	std::string pn = ChangePn(DisableGAGAP_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* DisableAll_Assemble = "\
@@ -1527,7 +1568,8 @@ jng 006FAFFD\n\
 ";
 bool TrainerFunctions::DisableAll(int command) //瘫痪敌方所有单位
 {
-	return AutoAssemble(pid, DisableAll_Assemble, command);
+	std::string pn = ChangePn(DisableAll_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 bool TrainerFunctions::SpeedSet(int command) //调速
@@ -1585,7 +1627,8 @@ call dword ptr [eax+3C]\n\
 ";
 bool TrainerFunctions::EnableSoldAll_Cursor(int command) //允许玩家售卖所有单位
 {
-	return AutoAssemble(pid, EnableSoldAll_Cursor_Assemble, command);
+	std::string pn = ChangePn(EnableSoldAll_Cursor_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 bool TrainerFunctions::EnableSoldAll_Belong(int command) //允许玩家售卖所有单位-单位所属
@@ -1665,7 +1708,8 @@ mov eax,[esi]\n\
 ";
 bool TrainerFunctions::SoldierFlashMove(int command) //滑板鞋
 {
-	return AutoAssemble(pid, SoldierFlashMove_Assemble, command);
+	std::string pn = ChangePn(SoldierFlashMove_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 char* AllElite_Assemble = "\
@@ -1701,7 +1745,8 @@ jne 00750025\n\
 ";
 bool TrainerFunctions::AllElite(int command) //部队全部3级
 {
-	return AutoAssemble(pid, AllElite_Assemble, command);
+	std::string pn = ChangePn(AllElite_Assemble);
+	return AutoAssemble(pid, (char *)pn.c_str(), command);
 }
 
 ////////////////////////////////////

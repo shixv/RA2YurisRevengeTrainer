@@ -1,6 +1,7 @@
 
 #pragma once
 #include "trainerbase.h"
+#include <string>
 
 
 class TrainerFunctions : public TrainerBase
@@ -14,6 +15,8 @@ public:
 	BOOL wSpeed(DWORD Speed); //写入速度
 	BOOL wMymoney(DWORD money);
 	BOOL wBuildMaxm(DWORD maxm);
+	//替换进程名称
+	std::string ChangePn(char *);
 
 	BOOL QuickBuild();
 	BOOL RadarOn();
